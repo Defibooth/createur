@@ -209,6 +209,12 @@
   .aide { min-height: 1.3em; font-size: .85rem; color: var(--brume); opacity: .85; }
 
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+  .bouton-site { display: inline-flex; align-items: center; justify-content: center; width: 100%; min-height: 60px; margin-top: 8px; padding: 16px 20px;
+    font-family: var(--police); font-size: 1rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; text-decoration: none;
+    color: var(--bouton-texte); background: linear-gradient(180deg, var(--champagne) 0%, var(--or-clair) 35%, var(--or) 70%, var(--or-fonce) 130%);
+    border-radius: 50px; box-shadow: 0 8px 24px rgba(0,0,0,.28); }
+  .fin-jeu { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .fin-jeu .emoji-fin { font-size: 3rem; }
 </style>
 </head>
 <body>
@@ -462,6 +468,23 @@
     document.getElementById('soustitre').textContent = sousTitre || 'Seras-tu prêt(e) à relever le défi ?';
     document.title = evenement ? titre + ' · ' + evenement : titre;
   }
+
+  // Date de fin du jeu (config.js : expire: 'AAAA-MM-JJ'). Après cette date, le jeu affiche un message de fin.
+  const LIEN_SITE = 'https://defibooth.wixsite.com/defibooth';
+  function verifierExpiration(cfg) {
+    if (new URLSearchParams(location.search).has('apercu')) return false;
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String((cfg || {}).expire || ''));
+    if (!m) return false;
+    const fin = new Date(+m[1], +m[2] - 1, +m[3], 23, 59, 59);
+    if (Date.now() <= fin.getTime()) return false;
+    const jeu = document.querySelector('.jeu');
+    jeu.innerHTML = '<div class="fin-jeu"><div class="emoji-fin" aria-hidden="true">📸</div>'
+      + '<h1>Ce jeu est terminé</h1>'
+      + '<p class="subtitle">Merci d\'avoir joué ! Ce jeu de défis photo n\'est plus disponible.</p>'
+      + '<a class="bouton-site" href="' + LIEN_SITE + '">Créer mon jeu Defibooth</a></div>';
+    document.title = 'Jeu terminé · Defibooth';
+    return true;
+  }
 </script>
 
 <script>
@@ -629,6 +652,7 @@
         ? [...new Set(cfg.defis.map(d => texteNettoye(d, 120)).filter(Boolean))]
         : [];
       tousLesDefis = liste.length >= 2 ? liste : DEFIS_STANDARD.slice();
+      verifierExpiration(cfg);
     }
 
     appliquerConfig(window.DEFIBOOTH_CONFIG);
