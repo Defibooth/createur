@@ -321,7 +321,9 @@
     lienSite: 'https://defibooth.wixsite.com/defibooth/offres',
     prix: '49 €',
     minimumDefis: 15,
-    maximumPersos: 50
+    maximumPersos: 50,
+    // Durée d'accès au jeu après la date de l'événement (voir CGV, article 6)
+    moisAccesApresEvenement: 3
   };
   // =====================================================================
 
@@ -527,6 +529,17 @@
     return [...new Set([...coches, ...defisPersos()])];
   }
 
+  // Date de fin d'accès : date de l'événement + N mois (format AAAA-MM-JJ)
+  function dateFin() {
+    const v = $('date').value;
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v);
+    if (!m) return '';
+    const d = new Date(+m[1], +m[2] - 1 + REGLAGES.moisAccesApresEvenement, +m[3]);
+    if (d.getDate() !== +m[3]) d.setDate(0); // ex. 31 mai + 3 mois -> 31 août ; 30 nov + 3 mois -> fin février
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  const dateFr = iso => iso ? iso.split('-').reverse().join('/') : '';
+
   function configuration() {
     const cfg = {
       evenement: propre($('evenement').value, 60),
@@ -538,6 +551,8 @@
     const couleurs = {};
     ['accent', 'fond'].forEach(id => { if ($(id).dataset.perso === '1') couleurs[id] = $(id).value; });
     if (Object.keys(couleurs).length) cfg.couleurs = couleurs;
+    const fin = dateFin();
+    if (fin) cfg.expire = fin;
     return cfg;
   }
 
@@ -603,6 +618,7 @@
       ['Titre', cfg.titre],
       ['Thème', (pal ? pal.emoji + ' ' + pal.nom : '') + (cfg.couleurs ? ' · couleurs personnalisées' : '')],
       ['Défis', n + (persos.length ? ' dont ' + persos.length + ' sur mesure' : '')],
+      ['Jeu accessible jusqu\'au', dateFr(dateFin()) || 'selon la date de l\'événement'],
       ['Prix', REGLAGES.prix + ' TTC']
     ];
     const recap = $('recap'); recap.innerHTML = '';
@@ -684,6 +700,7 @@
       'Accroche : ' + cfg.sousTitre,
       'Thème : ' + (pal ? pal.nom : cfg.theme),
       'Couleurs : ' + (cfg.couleurs ? Object.entries(cfg.couleurs).map(([k, v]) => (k === 'fond' ? 'fond ' : 'principale ') + v).join(', ') : 'celles du thème'),
+      'Jeu accessible jusqu\'au : ' + dateFr(cfg.expire) + ' (expire dans config.js)',
       'Nombre de défis : ' + cfg.defis.length + ' (dont ' + defisPersos().length + ' sur mesure)',
       '',
       'À vérifier : le paiement Stripe avec la référence ' + ref + '.',
