@@ -272,10 +272,15 @@
         <li>Lien et QR code envoyés par e-mail</li>
         <li>Jeu accessible sans application, sur tous les smartphones</li>
       </ul>
+      <label class="defi consentement" for="renonciation">
+        <input type="checkbox" id="renonciation" required>
+        <span>J'accepte les <a href="#" class="lienCgv" target="_blank" rel="noopener">conditions générales de vente</a>. Je demande que mon jeu me soit fourni avant la fin du délai de rétractation de 14 jours et je reconnais perdre mon droit de rétractation dès que le lien de mon jeu m'aura été envoyé.</span>
+      </label>
+      <span class="msg-erreur" id="err-renonciation"></span>
       <p class="erreur-globale" id="erreurGlobale" role="alert"></p>
       <input type="checkbox" name="botcheck" class="sr-only" tabindex="-1" autocomplete="off" aria-hidden="true">
       <button type="submit" class="bouton-principal" id="valider">Valider et payer <span id="prixBouton"></span></button>
-      <p class="mention">Vous serez redirigé vers notre page de paiement sécurisée (Stripe).<br>En validant, vous acceptez nos <a href="#" id="lienCgv" target="_blank" rel="noopener">conditions générales de vente</a>.</p>
+      <p class="mention">Vous serez redirigé vers notre page de paiement sécurisée (Stripe). Votre jeu est mis en ligne sous 48 h après paiement ; tant que son lien ne vous a pas été envoyé, vous pouvez annuler et être remboursé intégralement sur simple demande.<br><a href="#" id="lienCgv" class="lienCgv" target="_blank" rel="noopener">Conditions générales de vente</a></p>
     </fieldset>
   </form>
 
@@ -311,9 +316,9 @@
     // Lien de paiement Stripe du « Jeu personnalisé » (commence par https://buy.stripe.com/...)
     lienStripe: 'https://buy.stripe.com/8x25kw8Hq9JW1uv5IqfrW01',
     // Adresse de la page des conditions générales de vente sur ton site
-    lienCgv: 'https://www.defibooth.fr/cgv',
+    lienCgv: 'https://defibooth.wixsite.com/defibooth/cgv',
     // Page « Nos offres » de ton site (bouton Retour et logo)
-    lienSite: 'https://defibooth.wixsite.com/defibooth/blank-3',
+    lienSite: 'https://defibooth.wixsite.com/defibooth/offres',
     prix: '49 €',
     minimumDefis: 15,
     maximumPersos: 50
@@ -507,7 +512,7 @@
 
   $('minimum').textContent = REGLAGES.minimumDefis;
   $('prixBouton').textContent = REGLAGES.prix;
-  $('lienCgv').href = REGLAGES.lienCgv;
+  document.querySelectorAll('.lienCgv').forEach(a => a.href = REGLAGES.lienCgv);
   $('lienLogo').href = REGLAGES.lienSite; $('lienRetour').href = REGLAGES.lienSite;
 
   // ---------- Lecture du formulaire ----------
@@ -648,6 +653,7 @@
     verif('nom', propre($('nom').value, 80).length >= 2, 'Indiquez votre nom.');
     verif('email', /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test($('email').value.trim()), 'Indiquez une adresse e-mail valide.');
     verif('date', !!$('date').value && $('date').value >= $('date').min, 'Indiquez la date de votre événement.');
+    verif('renonciation', $('renonciation').checked, 'Merci de cocher cette case pour continuer.');
     if (premier) premier.focus({ preventScroll: false });
     return ok;
   }
@@ -671,6 +677,7 @@
       'Téléphone : ' + (propre($('tel').value, 20) || '—'),
       "Date de l'événement : " + $('date').value.split('-').reverse().join('/'),
       'Précision : ' + (propre($('message').value, 600) || '—'),
+      'CGV acceptées et renonciation au droit de rétractation (après livraison) : OUI, le ' + new Date().toLocaleString('fr-FR'),
       '',
       'Événement : ' + cfg.evenement,
       'Titre : ' + cfg.titre,
