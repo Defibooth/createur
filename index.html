@@ -95,8 +95,20 @@
   .palette label:hover { border-color: var(--ligne-forte); }
   .palette input:checked + label { border-color: var(--or-clair); box-shadow: 0 0 0 2px rgba(243,210,122,.35); }
   .palette input:focus-visible + label { outline: 3px solid var(--champagne); outline-offset: 2px; }
-  .nuancier { display: flex; height: 34px; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,.08); }
+  .nuancier { display: flex; height: 34px; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,.08); position: relative; }
   .nuancier span { flex: 1; }
+  .nuancier .emoji { position: absolute; inset: 0; display: grid; place-items: center; font-size: 1.15rem; filter: drop-shadow(0 1px 2px rgba(0,0,0,.5)); }
+  .palette small { display: block; font-weight: 400; color: var(--brume); font-size: .78rem; line-height: 1.3; }
+
+  /* Couleurs libres */
+  details.couleurs-libres { margin-top: 16px; border: 1px dashed var(--ligne-forte); border-radius: 14px; background: rgba(10,5,22,.3); }
+  details.couleurs-libres summary { cursor: pointer; padding: 12px 14px; font-weight: 600; color: var(--or-clair); list-style: none; }
+  details.couleurs-libres summary::-webkit-details-marker { display: none; }
+  details.couleurs-libres summary::before { content: "🎨 "; }
+  .couleurs-corps { padding: 0 14px 14px; }
+  .ligne-couleur { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  input[type=color] { width: 56px; height: 44px; padding: 3px; border: 1px solid var(--ligne); border-radius: 10px; background: rgba(10,5,22,.55); cursor: pointer; }
+  .etat-couleur { font-size: .82rem; color: var(--brume); }
 
   /* Défis */
   .barre-defis { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 14px; }
@@ -222,8 +234,26 @@
 
     <fieldset>
       <legend><span class="num">2</span><span class="legende">L'ambiance</span></legend>
-      <p class="aide-bloc">Choisissez les couleurs de votre jeu.</p>
-      <div class="palettes" id="palettes" role="radiogroup" aria-label="Palette de couleurs"></div>
+      <p class="aide-bloc">Choisissez l'univers de votre jeu : décor, animations, police et couleurs changent avec le thème.</p>
+      <div class="palettes" id="palettes" role="radiogroup" aria-label="Thème du jeu"></div>
+      <details class="couleurs-libres" id="blocCouleurs">
+        <summary>Personnaliser les couleurs <span class="facultatif">(facultatif)</span></summary>
+        <div class="couleurs-corps">
+          <p class="aide-bloc">Aux couleurs de votre mariage ou de votre entreprise. Les textes s'adaptent automatiquement pour rester lisibles.</p>
+          <div class="grille-2">
+            <div class="champ">
+              <label for="accent">Couleur principale</label>
+              <div class="ligne-couleur"><input type="color" id="accent"><span class="etat-couleur" id="etat-accent"></span>
+                <button type="button" class="bouton-lien" data-raz="accent">Couleur du thème</button></div>
+            </div>
+            <div class="champ">
+              <label for="fond">Couleur du fond</label>
+              <div class="ligne-couleur"><input type="color" id="fond"><span class="etat-couleur" id="etat-fond"></span>
+                <button type="button" class="bouton-lien" data-raz="fond">Couleur du thème</button></div>
+            </div>
+          </div>
+        </div>
+      </details>
     </fieldset>
 
     <fieldset>
@@ -438,25 +468,44 @@
   ];
 
   const PALETTES = [
-    { id: 'prune',    nom: 'Soirée chic',  couleurs: ['#140c26', '#3a1a55', '#e9b44c', '#ff3d8b'] },
-    { id: 'bleu',     nom: 'Nuit bleue',   couleurs: ['#08132a', '#1c3d74', '#e9b44c', '#2fa8e8'] },
-    { id: 'emeraude', nom: 'Émeraude',     couleurs: ['#05171a', '#11483f', '#e9b44c', '#2fbfa8'] },
-    { id: 'bordeaux', nom: 'Bordeaux',     couleurs: ['#1a0710', '#5a1a2e', '#e9b44c', '#ff5a5f'] },
-    { id: 'noir',     nom: 'Noir élégant', couleurs: ['#0b0b0d', '#2c2c35', '#e9b44c', '#a7a7b5'] }
+    { id: 'disco',        nom: 'Soirée disco',  emoji: '🪩', desc: 'Boule à facettes, lumières, or et rose', couleurs: ['#140c26', '#3a1a55', '#e9b44c', '#ff3d8b'], fond: '#140c26', accent: '#ff3d8b' },
+    { id: 'mariage',      nom: 'Mariage',       emoji: '💍', desc: 'Fond clair, feuillage, alliances, cœurs', couleurs: ['#fbf6ef', '#f4dcd6', '#c9a24a', '#d98a9a'], fond: '#fbf6ef', accent: '#d98a9a' },
+    { id: 'anniversaire', nom: 'Anniversaire',  emoji: '🎂', desc: 'Fanions, ballons, gâteau, confettis', couleurs: ['#0f1433', '#3b2a8a', '#ffd166', '#ff6b9d'], fond: '#0f1433', accent: '#ff6b9d' },
+    { id: 'entreprise',   nom: 'Entreprise',    emoji: '💼', desc: 'Sobre et élégant, aux couleurs de la marque', couleurs: ['#0b1220', '#1d3556', '#cfd8e3', '#3d8bfd'], fond: '#0b1220', accent: '#3d8bfd' },
+    { id: 'noel',         nom: 'Noël',          emoji: '🎄', desc: 'Sapin, boules, neige qui tombe', couleurs: ['#081c14', '#1a5a3a', '#e9b44c', '#e63946'], fond: '#081c14', accent: '#e63946' },
+    { id: 'halloween',    nom: 'Halloween',     emoji: '🎃', desc: 'Toiles, araignée, citrouille, braises', couleurs: ['#100816', '#3d1a52', '#f59e0b', '#ff7a1a'], fond: '#100816', accent: '#ff7a1a' }
   ];
 
   const $ = id => document.getElementById(id);
   const form = $('formulaire');
-  const CLE_BROUILLON = 'defibooth-createur-brouillon-v1';
+  const CLE_BROUILLON = 'defibooth-createur-brouillon-v2';
 
   // ---------- Construction des palettes ----------
   PALETTES.forEach((p, i) => {
     const div = document.createElement('div');
     div.className = 'palette';
     div.innerHTML = `<input type="radio" name="palette" id="pal-${p.id}" value="${p.id}" ${i === 0 ? 'checked' : ''}>
-      <label for="pal-${p.id}"><span class="nuancier">${p.couleurs.map(c => `<span style="background:${c}"></span>`).join('')}</span>${p.nom}</label>`;
+      <label for="pal-${p.id}"><span class="nuancier">${p.couleurs.map(c => `<span style="background:${c}"></span>`).join('')}<span class="emoji">${p.emoji}</span></span>${p.nom}<small>${p.desc}</small></label>`;
     $('palettes').appendChild(div);
   });
+
+  // ---------- Couleurs libres ----------
+  // Une couleur n'est « personnalisée » que si le client l'a touchée ; sinon on garde celle du thème.
+  const themeCourant = () => PALETTES.find(p => p.id === ((form.querySelector('input[name=palette]:checked') || {}).value)) || PALETTES[0];
+  function rafraichirCouleurs() {
+    const th = themeCourant();
+    ['accent', 'fond'].forEach(id => {
+      const ch = $(id);
+      if (ch.dataset.perso !== '1') ch.value = th[id];
+      $('etat-' + id).textContent = ch.dataset.perso === '1' ? 'personnalisée' : 'celle du thème';
+    });
+  }
+  ['accent', 'fond'].forEach(id => {
+    $(id).addEventListener('input', () => { $(id).dataset.perso = '1'; });
+  });
+  document.querySelectorAll('[data-raz]').forEach(b => b.addEventListener('click', () => {
+    $(b.dataset.raz).dataset.perso = ''; miseAJour();
+  }));
 
   // ---------- Construction des défis par catégorie ----------
   DEFIS.forEach((cat, ci) => {
@@ -516,9 +565,12 @@
       evenement: propre($('evenement').value, 60),
       titre: propre($('titre').value, 40) || 'Défis Photobooth',
       sousTitre: propre($('sousTitre').value, 90) || 'Seras-tu prêt(e) à relever le défi ?',
-      palette: (form.querySelector('input[name=palette]:checked') || {}).value || 'prune',
+      theme: themeCourant().id,
       defis: defisChoisis()
     };
+    const couleurs = {};
+    ['accent', 'fond'].forEach(id => { if ($(id).dataset.perso === '1') couleurs[id] = $(id).value; });
+    if (Object.keys(couleurs).length) cfg.couleurs = couleurs;
     return cfg;
   }
 
@@ -576,12 +628,13 @@
     tot.textContent = n + ' défis dans votre jeu';
     tot.classList.toggle('trop-peu', n < REGLAGES.minimumDefis);
 
+    rafraichirCouleurs();
     const cfg = configuration();
-    const pal = PALETTES.find(p => p.id === cfg.palette);
+    const pal = PALETTES.find(p => p.id === cfg.theme);
     const lignes = [
       ['Événement', cfg.evenement || '—'],
       ['Titre', cfg.titre],
-      ['Ambiance', pal ? pal.nom : ''],
+      ['Thème', (pal ? pal.emoji + ' ' + pal.nom : '') + (cfg.couleurs ? ' · couleurs personnalisées' : '')],
       ['Défis', n + (persos.length ? ' dont ' + persos.length + ' sur mesure' : '')],
       ['Prix', REGLAGES.prix + ' TTC']
     ];
@@ -594,7 +647,7 @@
 
   function sauverBrouillon() {
     try {
-      const b = { champs: {}, palette: configuration().palette, decoches: [] };
+      const b = { champs: {}, palette: themeCourant().id, couleurs: configuration().couleurs || {}, decoches: [] };
       ['evenement', 'titre', 'sousTitre', 'persos', 'nom', 'email', 'tel', 'date', 'message'].forEach(id => b.champs[id] = $(id).value);
       document.querySelectorAll('#categories input:not(:checked)').forEach(cb => b.decoches.push(cb.dataset.cle));
       localStorage.setItem(CLE_BROUILLON, JSON.stringify(b));
@@ -606,6 +659,7 @@
       if (!b) return;
       Object.entries(b.champs || {}).forEach(([id, v]) => { if ($(id) && typeof v === 'string') $(id).value = v; });
       const r = form.querySelector(`input[name=palette][value="${b.palette}"]`); if (r) r.checked = true;
+      Object.entries(b.couleurs || {}).forEach(([id, v]) => { if ($(id) && /^#[0-9a-f]{6}$/i.test(v)) { $(id).value = v; $(id).dataset.perso = '1'; $('blocCouleurs').open = true; } });
       (b.decoches || []).forEach(k => { const cb = document.querySelector(`#categories input[data-cle="${k}"]`); if (cb) cb.checked = false; });
     } catch (e) {}
   }
@@ -645,7 +699,7 @@
   }
 
   function texteEmail(ref, cfg) {
-    const pal = PALETTES.find(p => p.id === cfg.palette);
+    const pal = PALETTES.find(p => p.id === cfg.theme);
     const configJs = 'window.DEFIBOOTH_CONFIG = ' + JSON.stringify(cfg, null, 2) + ';\n';
     return [
       'NOUVEAU JEU PERSONNALISÉ — ' + ref,
@@ -659,7 +713,8 @@
       'Événement : ' + cfg.evenement,
       'Titre : ' + cfg.titre,
       'Accroche : ' + cfg.sousTitre,
-      'Ambiance : ' + (pal ? pal.nom : cfg.palette),
+      'Thème : ' + (pal ? pal.nom : cfg.theme),
+      'Couleurs : ' + (cfg.couleurs ? Object.entries(cfg.couleurs).map(([k, v]) => (k === 'fond' ? 'fond ' : 'principale ') + v).join(', ') : 'celles du thème'),
       'Nombre de défis : ' + cfg.defis.length + ' (dont ' + defisPersos().length + ' sur mesure)',
       '',
       'À vérifier : le paiement Stripe avec la référence ' + ref + '.',
