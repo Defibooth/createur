@@ -605,7 +605,17 @@
     }
 
     function nouvellePioche(dernier) {
-      pioche = melanger(tousLesDefis);
+      if (defisPrioritaires.size) {
+        // Les défis du client sortent plus souvent : ils sont placés en priorité dans la pioche
+        // (tirage pondéré : un défi du client « pèse » POIDS_PERSO fois plus qu'un défi standard).
+        const u = () => (hasard(1000000) + 1) / 1000001;
+        pioche = tousLesDefis
+          .map(d => ({ d, k: -Math.log(u()) / (defisPrioritaires.has(d) ? POIDS_PERSO : 1) }))
+          .sort((a, b) => a.k - b.k)
+          .map(x => x.d);
+      } else {
+        pioche = melanger(tousLesDefis);
+      }
       // Le premier défi du nouveau tour ne doit pas être celui qui vient de sortir
       if (dernier && pioche[0] === dernier && pioche.length > 1) {
         const j = 1 + hasard(pioche.length - 1);
@@ -643,6 +653,8 @@
     // ================= PERSONNALISATION =================
     // Les réglages viennent de config.js (window.DEFIBOOTH_CONFIG). Sans réglage : jeu standard, thème disco.
     const DEFIS_STANDARD = tousLesDefis.slice();
+    const POIDS_PERSO = 5;
+    let defisPrioritaires = new Set();
 
     function appliquerConfig(cfg) {
       cfg = cfg || {};
@@ -651,8 +663,33 @@
       const liste = Array.isArray(cfg.defis)
         ? [...new Set(cfg.defis.map(d => texteNettoye(d, 120)).filter(Boolean))]
         : [];
-      tousLesDefis = liste.length >= 2 ? liste : DEFIS_STANDARD.slice();
+      const persos = Array.isArray(cfg.defisPerso)
+        ? [...new Set(cfg.defisPerso.map(d => texteNettoye(d, 120)).filter(Boolean))].slice(0, 50)
+        : [];
+      if (liste.length >= 2) {
+        // Ancien format : liste complète fournie par le client
+        tousLesDefis = liste; defisPrioritaires = new Set();
+      } else if (persos.length) {
+        // Nouveau format : les défis du client remplacent autant de défis standard,
+        // choisis au hasard mais toujours les mêmes pour ce jeu (tous les invités ont le même jeu).
+        const restants = DEFIS_STANDARD.filter(d => !persos.includes(d));
+        const garde = melangeFixe(restants, persos.join('|')).slice(0, Math.max(0, DEFIS_STANDARD.length - persos.length));
+        tousLesDefis = [...persos, ...garde];
+        defisPrioritaires = new Set(persos);
+      } else {
+        tousLesDefis = DEFIS_STANDARD.slice(); defisPrioritaires = new Set();
+      }
       verifierExpiration(cfg);
+    }
+
+    // Mélange « fixe » : toujours le même résultat pour la même graine.
+    function melangeFixe(liste, graine) {
+      let h = 2166136261;
+      for (let i = 0; i < graine.length; i++) { h ^= graine.charCodeAt(i); h = Math.imul(h, 16777619); }
+      const alea = () => { h = (h + 0x6D2B79F5) | 0; let x = Math.imul(h ^ (h >>> 15), 1 | h); x = (x + Math.imul(x ^ (x >>> 7), 61 | x)) ^ x; return ((x ^ (x >>> 14)) >>> 0) / 4294967296; };
+      const a = [...liste];
+      for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(alea() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+      return a;
     }
 
     appliquerConfig(window.DEFIBOOTH_CONFIG);

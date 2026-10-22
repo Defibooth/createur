@@ -162,7 +162,7 @@
   <header class="entete">
     <p class="marque">Pack personnalisé</p>
     <h1>Créez votre jeu de défis photo</h1>
-    <p class="intro">Donnez un nom à votre événement, choisissez une ambiance et composez votre liste de défis. L'aperçu se met à jour en direct&nbsp;: testez-le comme vos invités le feront.</p>
+    <p class="intro">Donnez un nom à votre événement, choisissez une ambiance et ajoutez vos propres défis. L'aperçu se met à jour en direct&nbsp;: testez-le comme vos invités le feront.</p>
     <div class="etapes-resume" aria-hidden="true"><span>1 · Votre événement</span><span>2 · L'ambiance</span><span>3 · Vos défis</span><span>4 · Vos coordonnées</span></div>
   </header>
 
@@ -217,15 +217,10 @@
 
     <fieldset>
       <legend><span class="num">3</span><span class="legende">Vos défis</span></legend>
-      <p class="aide-bloc">Tous nos défis sont sélectionnés au départ. Retirez ceux qui ne conviennent pas et ajoutez les vôtres (au moins <strong id="minimum"></strong> défis au total).</p>
+      <p class="aide-bloc">Votre jeu contient déjà <strong>80 défis photo</strong> testés en soirée — gardés secrets pour la surprise de vos invités&nbsp;! Ajoutez si vous le souhaitez vos propres défis&nbsp;: ils prennent la place de certains des nôtres et <strong>sortent plus souvent</strong> pendant la partie.</p>
       <div class="barre-defis">
         <p class="total" id="total" aria-live="polite"></p>
-        <div class="cat-actions">
-          <button type="button" class="bouton-lien" id="toutCocher">Tout sélectionner</button>
-          <button type="button" class="bouton-lien" id="toutDecocher">Tout retirer</button>
-        </div>
       </div>
-      <div id="categories"></div>
       <div class="champ perso-titre">
         <label for="persos">Vos défis sur mesure <span class="facultatif">(un par ligne)</span></label>
         <textarea id="persos" placeholder="Ex. : Refais la photo de ta première rencontre avec Julie&#10;Prends la pose avec le gâteau des mariés"></textarea>
@@ -327,113 +322,7 @@
   };
   // =====================================================================
 
-  const DEFIS = [
-    {
-      "nom": "Expressions et grimaces",
-      "defis": [
-        "Fais ta plus belle grimace !",
-        "Prends l'air le plus surpris de ta vie",
-        "Fais ton plus grand éclat de rire",
-        "Fais la moue la plus boudeuse possible",
-        "Fais un clin d'œil ravageur",
-        "Prends un air mystérieux, surtout sans sourire",
-        "Fais comme si tu avais vu un fantôme",
-        "Fais la grimace du citron trop acide",
-        "Prends ta tête du lundi matin",
-        "Fais le sourire le plus forcé du monde",
-        "Prends un air terriblement suspicieux",
-        "Fais semblant d'éternuer au moment de la photo",
-        "Prends un air catastrophé, comme si tout était perdu",
-        "Fais les yeux doux à l'objectif",
-        "Lève le menton et montre ta plus grande fierté",
-        "Fais semblant de bâiller d'ennui"
-      ]
-    },
-    {
-      "nom": "Poses de star",
-      "defis": [
-        "Prends la pose sur le tapis rouge",
-        "Pose comme pour la couverture d'un magazine",
-        "Prends la pose d'un super-héros",
-        "Pose comme une star poursuivie par les paparazzis",
-        "Prends la pose d'une pochette d'album des années 80",
-        "Pose comme un top model, le vent dans les cheveux",
-        "Prends la pose du champion sur le podium",
-        "Prends la pose de la Joconde",
-        "Pose comme une statue de musée",
-        "Prends la pose d'un agent secret",
-        "Prends la pose d'un roi ou d'une reine sur son trône",
-        "Pose comme pour une photo de CV très sérieuse",
-        "Prends ta pose de vacances idéale",
-        "Pose comme dans un clip de rap",
-        "Prends la pose de yoga la plus improbable",
-        "Prends la pose d'un boxeur avant le combat"
-      ]
-    },
-    {
-      "nom": "Imitations et personnages",
-      "defis": [
-        "Imite ton animal préféré",
-        "Imite un robot",
-        "Imite un pingouin",
-        "Imite ton émoji préféré",
-        "Fais le dinosaure le plus effrayant",
-        "Imite un chef d'orchestre en pleine envolée",
-        "Joue de la guitare comme une rock star",
-        "Chante à pleins poumons dans un micro imaginaire",
-        "Imite un présentateur du journal télé",
-        "Prends l'air d'un détective qui vient de trouver l'indice",
-        "Imite un mime coincé dans une boîte invisible",
-        "Fais le cow-boy prêt à dégainer",
-        "Montre tes muscles comme un culturiste",
-        "Fais le magicien qui fait apparaître quelque chose",
-        "Imite un zombie qui se réveille",
-        "Fige-toi comme une statue de cire"
-      ]
-    },
-    {
-      "nom": "Mises en scène",
-      "defis": [
-        "Fais comme si tu venais de gagner au loto",
-        "Fais semblant de surfer sur une vague géante",
-        "Fais comme si tu avais croqué un piment très fort",
-        "Fais comme si tu avais très, très froid",
-        "Fais semblant d'être sur des montagnes russes",
-        "Fais comme si une tempête te soufflait au visage",
-        "Fais semblant de t'évanouir d'émotion",
-        "Fais comme si tu prenais un selfie avec l'objectif",
-        "Fais une photo avec le DJ",
-        "Fais semblant de chuchoter un énorme secret",
-        "Fige-toi en plein pas de danse",
-        "Fais comme si tu venais d'apprendre la meilleure nouvelle de l'année",
-        "Fais semblant de soulever quelque chose de très lourd",
-        "Fais comme si une araignée venait d'apparaître",
-        "Prends la pose de la star de la soirée",
-        "Fais un cœur avec tes mains"
-      ]
-    },
-    {
-      "nom": "En groupe",
-      "defis": [
-        "Faites tous la même grimace",
-        "Regardez tous dans une direction différente",
-        "Faites tous semblant d'être très en colère",
-        "Faites tous semblant de dormir",
-        "Faites un câlin groupé",
-        "Posez dos à dos façon agents secrets",
-        "Prenez la pose d'un groupe de rock",
-        "Faites une photo de classe très sérieuse",
-        "Faites un grand cœur avec vos bras",
-        "Faites tous le même pas de danse en même temps",
-        "Les trois singes : je ne vois rien, je n'entends rien, je ne dis rien",
-        "L'un rit aux éclats, l'autre pleure à chaudes larmes",
-        "Faites discrètement des oreilles de lapin à votre voisin",
-        "Posez comme la famille royale au balcon",
-        "Faites semblant de vous disputer la meilleure place",
-        "Sautez tous en même temps !"
-      ]
-    }
-  ];
+  const NB_DEFIS_STANDARD = 80;
 
   const PALETTES = [
     { id: 'disco',        nom: 'Soirée disco',  emoji: '🪩', desc: 'Boule à facettes, lumières, or et rose', couleurs: ['#140c26', '#3a1a55', '#e9b44c', '#ff3d8b'], fond: '#140c26', accent: '#ff3d8b' },
@@ -475,44 +364,6 @@
     $(b.dataset.raz).dataset.perso = ''; miseAJour();
   }));
 
-  // ---------- Construction des défis par catégorie ----------
-  DEFIS.forEach((cat, ci) => {
-    const det = document.createElement('details');
-    det.className = 'categorie';
-    if (ci === 0) det.open = true;
-    const sum = document.createElement('summary');
-    sum.innerHTML = `<span></span><span class="cat-compte"></span>`;
-    sum.firstChild.textContent = cat.nom;
-    det.appendChild(sum);
-    const corps = document.createElement('div');
-    corps.className = 'cat-corps';
-    const actions = document.createElement('div');
-    actions.className = 'cat-actions';
-    actions.innerHTML = '<button type="button" class="bouton-lien">Tout</button><button type="button" class="bouton-lien">Aucun</button>';
-    actions.children[0].addEventListener('click', () => cocherCategorie(det, true));
-    actions.children[1].addEventListener('click', () => cocherCategorie(det, false));
-    corps.appendChild(actions);
-    cat.defis.forEach((d, di) => {
-      const lab = document.createElement('label');
-      lab.className = 'defi';
-      const cb = document.createElement('input');
-      cb.type = 'checkbox'; cb.checked = true; cb.value = d; cb.dataset.cle = ci + '-' + di;
-      const sp = document.createElement('span'); sp.textContent = d;
-      lab.append(cb, sp);
-      corps.appendChild(lab);
-    });
-    det.appendChild(corps);
-    $('categories').appendChild(det);
-  });
-
-  function cocherCategorie(det, etat) {
-    det.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = etat);
-    miseAJour();
-  }
-  $('toutCocher').addEventListener('click', () => { document.querySelectorAll('#categories input').forEach(cb => cb.checked = true); miseAJour(); });
-  $('toutDecocher').addEventListener('click', () => { document.querySelectorAll('#categories input').forEach(cb => cb.checked = false); miseAJour(); });
-
-  $('minimum').textContent = REGLAGES.minimumDefis;
   $('prixBouton').textContent = REGLAGES.prix;
   document.querySelectorAll('.lienCgv').forEach(a => a.href = REGLAGES.lienCgv);
   $('lienLogo').href = REGLAGES.lienSite; $('lienRetour').href = REGLAGES.lienSite;
@@ -524,10 +375,6 @@
     return $('persos').value.split('\n').map(l => propre(l, 120)).filter(Boolean).slice(0, REGLAGES.maximumPersos);
   }
 
-  function defisChoisis() {
-    const coches = [...document.querySelectorAll('#categories input:checked')].map(cb => cb.value);
-    return [...new Set([...coches, ...defisPersos()])];
-  }
 
   // Date de fin d'accès : date de l'événement + N mois (format AAAA-MM-JJ)
   function dateFin() {
@@ -546,8 +393,9 @@
       titre: propre($('titre').value, 40) || 'Défis Photobooth',
       sousTitre: propre($('sousTitre').value, 90) || 'Seras-tu prêt(e) à relever le défi ?',
       theme: themeCourant().id,
-      defis: defisChoisis()
     };
+    const persos = defisPersos();
+    if (persos.length) cfg.defisPerso = persos;
     const couleurs = {};
     ['accent', 'fond'].forEach(id => { if ($(id).dataset.perso === '1') couleurs[id] = $(id).value; });
     if (Object.keys(couleurs).length) cfg.couleurs = couleurs;
@@ -560,7 +408,7 @@
   const cadres = () => [...document.querySelectorAll('iframe[data-apercu], #cadre')];
   function envoyerApercu() {
     const cfg = configuration();
-    const pourApercu = Object.assign({}, cfg, { defis: cfg.defis.length >= 2 ? cfg.defis : [] });
+    const pourApercu = cfg;
     cadres().forEach(f => { try { f.contentWindow.postMessage({ type: 'defibooth-config', config: pourApercu }, location.origin); } catch (e) {} });
   }
   let minuteur = null;
@@ -601,14 +449,8 @@
     });
     const persos = defisPersos();
     $('compteurPersos').textContent = persos.length + ' défi(s) sur mesure' + (persos.length >= REGLAGES.maximumPersos ? ' (maximum atteint)' : '');
-    document.querySelectorAll('details.categorie').forEach(det => {
-      const t = det.querySelectorAll('input').length, c = det.querySelectorAll('input:checked').length;
-      det.querySelector('.cat-compte').textContent = c + ' / ' + t;
-    });
-    const n = defisChoisis().length;
-    const tot = $('total');
-    tot.textContent = n + ' défis dans votre jeu';
-    tot.classList.toggle('trop-peu', n < REGLAGES.minimumDefis);
+    const n = NB_DEFIS_STANDARD;
+    $('total').textContent = n + ' défis dans votre jeu' + (persos.length ? ', dont ' + persos.length + ' à vous' : '');
 
     rafraichirCouleurs();
     const cfg = configuration();
@@ -630,9 +472,8 @@
 
   function sauverBrouillon() {
     try {
-      const b = { champs: {}, palette: themeCourant().id, couleurs: configuration().couleurs || {}, decoches: [] };
+      const b = { champs: {}, palette: themeCourant().id, couleurs: configuration().couleurs || {} };
       ['evenement', 'titre', 'sousTitre', 'persos', 'nom', 'email', 'tel', 'date', 'message'].forEach(id => b.champs[id] = $(id).value);
-      document.querySelectorAll('#categories input:not(:checked)').forEach(cb => b.decoches.push(cb.dataset.cle));
       localStorage.setItem(CLE_BROUILLON, JSON.stringify(b));
     } catch (e) {}
   }
@@ -643,7 +484,6 @@
       Object.entries(b.champs || {}).forEach(([id, v]) => { if ($(id) && typeof v === 'string') $(id).value = v; });
       const r = form.querySelector(`input[name=palette][value="${b.palette}"]`); if (r) r.checked = true;
       Object.entries(b.couleurs || {}).forEach(([id, v]) => { if ($(id) && /^#[0-9a-f]{6}$/i.test(v)) { $(id).value = v; $(id).dataset.perso = '1'; $('blocCouleurs').open = true; } });
-      (b.decoches || []).forEach(k => { const cb = document.querySelector(`#categories input[data-cle="${k}"]`); if (cb) cb.checked = false; });
     } catch (e) {}
   }
 
@@ -665,7 +505,6 @@
     let ok = true, premier = null;
     const verif = (id, cond, msg) => { const bon = erreur(id, cond ? '' : msg); if (!bon) { ok = false; premier = premier || $(id) || $('persos'); } };
     verif('evenement', propre($('evenement').value, 60).length >= 2, 'Indiquez le nom de votre événement.');
-    verif('defis', defisChoisis().length >= REGLAGES.minimumDefis, `Il faut au moins ${REGLAGES.minimumDefis} défis (vous en avez ${defisChoisis().length}).`);
     verif('nom', propre($('nom').value, 80).length >= 2, 'Indiquez votre nom.');
     verif('email', /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test($('email').value.trim()), 'Indiquez une adresse e-mail valide.');
     verif('date', !!$('date').value && $('date').value >= $('date').min, 'Indiquez la date de votre événement.');
@@ -701,7 +540,7 @@
       'Thème : ' + (pal ? pal.nom : cfg.theme),
       'Couleurs : ' + (cfg.couleurs ? Object.entries(cfg.couleurs).map(([k, v]) => (k === 'fond' ? 'fond ' : 'principale ') + v).join(', ') : 'celles du thème'),
       'Jeu accessible jusqu\'au : ' + dateFr(cfg.expire) + ' (expire dans config.js)',
-      'Nombre de défis : ' + cfg.defis.length + ' (dont ' + defisPersos().length + ' sur mesure)',
+      'Défis sur mesure : ' + (cfg.defisPerso ? cfg.defisPerso.length + ' (prioritaires, remplacent autant de défis standard)' : 'aucun (jeu standard de 80 défis)'),
       '',
       'À vérifier : le paiement Stripe avec la référence ' + ref + '.',
       '',
