@@ -470,7 +470,7 @@
   }
 
   // Date de fin du jeu (config.js : expire: 'AAAA-MM-JJ'). Après cette date, le jeu affiche un message de fin.
-  const LIEN_SITE = 'https://defibooth.wixsite.com/defibooth';
+  const LIEN_SITE = 'https://www.defibooth.fr';
   function verifierExpiration(cfg) {
     if (new URLSearchParams(location.search).has('apercu')) return false;
     const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String((cfg || {}).expire || ''));
